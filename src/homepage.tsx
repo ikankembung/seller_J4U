@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { IoAnalytics } from 'react-icons/io5';
 import { FiClipboard } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
@@ -6,13 +6,48 @@ import { GiReceiveMoney } from 'react-icons/gi';
 import { BiFoodMenu } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import { Switch } from '@headlessui/react';
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import { IoIosArrowBack } from 'react-icons/io';
+import axios from 'axios';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = React.useState(true);
   const [isDeliveryEnabled, setIsDeliveryEnabled] = React.useState(true);
   const [showProfile, setShowProfile] = React.useState(false);
+  const [profileData, setProfileData] = React.useState<any>(null);
+  const token = localStorage.getItem('token');
+  const sellerId = localStorage.getItem('seller_id');
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!token || !sellerId) {
+        console.error('No token or Seller ID found, redirecting to login.');
+        navigate('/login');
+        return;
+      }
+
+      console.log("Seller ID:", sellerId);
+
+      try {
+        const response = await axios.get(`https://d006-114-10-45-252.ngrok-free.app/data_sellers/${sellerId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setProfileData(response.data);
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+      }
+    };
+
+    fetchProfile();
+  }, [token, sellerId, navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('seller_id');
+    navigate('/');
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 relative overflow-x-hidden">
@@ -27,8 +62,8 @@ const HomePage: React.FC = () => {
               <CgProfile className="text-2xl text-gray-700" />
             </button>
             <div>
-              <h1 className="text-2xl font-bold">Hallo Sultan</h1>
-              <p className="text-gray-500">Toko Bayu, Tokyo</p>
+              <h1 className="text-2xl font-bold">{profileData ? profileData.seller_name : 'Loading...'}</h1>
+              <p className="text-gray-500">{profileData ? profileData.contact_info : 'Loading...'}</p>
             </div>
           </div>
           
@@ -156,45 +191,21 @@ const HomePage: React.FC = () => {
                   <div className="bg-white rounded-xl divide-y divide-gray-100">
                     <div className="px-4 py-3.5">
                       <p className="text-xs text-gray-400">Name</p>
-                      <p className="text-[13px] text-gray-900 mt-0.5">sultanbayu123@gmail.com</p>
+                      <p className="text-[13px] text-gray-900 mt-0.5">{profileData ? profileData.seller_name : 'Loading...'}</p>
                     </div>
                     <div className="px-4 py-3.5">
-                      <p className="text-xs text-gray-400">Username</p>
-                      <p className="text-[13px] text-gray-900 mt-0.5">sultanbayu123@gmail.com</p>
-                    </div>
-                    <div className="px-4 py-3.5">
-                      <p className="text-xs text-gray-400">Role</p>
-                      <p className="text-[13px] text-gray-900 mt-0.5">Admin</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Contact Info Section */}
-                <div>
-                  <h2 className="text-[13px] font-medium text-gray-900 mb-3">Contact Info</h2>
-                  <div className="bg-white rounded-xl overflow-hidden">
-                    <div className="divide-y divide-gray-100">
-                      <div className="px-4 py-3.5 flex items-center justify-between">
-                        <div className="flex-1">
-                          <p className="text-xs text-gray-400">Email</p>
-                          <p className="text-[13px] text-gray-900 mt-0.5 truncate pr-4">sultanbayu123@gmail.com</p>
-                        </div>
-                        <IoIosArrowForward className="text-gray-400 flex-shrink-0" />
-                      </div>
-                      <div className="px-4 py-3.5 flex items-center justify-between">
-                        <div className="flex-1">
-                          <p className="text-xs text-gray-400">Number</p>
-                          <p className="text-[13px] text-gray-900 mt-0.5 truncate pr-4">+62 822-5544-8877</p>
-                        </div>
-                        <IoIosArrowForward className="text-gray-400 flex-shrink-0" />
-                      </div>
+                      <p className="text-xs text-gray-400">Number</p>
+                      <p className="text-[13px] text-gray-900 mt-0.5">{profileData ? profileData.contact_info : 'Loading...'}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="space-y-2.5 pt-4 pb-6">
-                  <button className="w-full bg-red-500 text-white py-3 rounded-xl font-medium text-sm hover:bg-red-600 transition-colors">
+                  <button 
+                    className="w-full bg-red-500 text-white py-3 rounded-xl font-medium text-sm hover:bg-red-600 transition-colors"
+                    onClick={handleLogout}
+                  >
                     Logout
                   </button>
                 </div>

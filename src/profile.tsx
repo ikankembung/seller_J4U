@@ -1,15 +1,13 @@
 import React, { useEffect } from 'react';
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import { IoIosArrowBack } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
-import { Switch } from '@headlessui/react';
 import axios from 'axios';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const [savePassword, setSavePassword] = React.useState(false);
-  const [profileData, setProfileData] = React.useState(null);
+  const [profileData, setProfileData] = React.useState<any>(null);
   const token = localStorage.getItem('token');
-  const sellerId = localStorage.getItem('sellerId');
+  const sellerId = localStorage.getItem('seller_id');
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -55,64 +53,12 @@ const ProfilePage: React.FC = () => {
           <div className="bg-white rounded-lg space-y-4">
             <div className="p-4">
               <p className="text-sm text-gray-500">Name</p>
-              <p className="text-sm">{profileData ? profileData.name : 'Loading...'}</p>
+              <p className="text-sm">{profileData ? profileData.seller_name : 'Loading...'}</p>
             </div>
             <div className="p-4 border-t">
-              <p className="text-sm text-gray-500">Username</p>
-              <p className="text-sm">Sultan</p>
+              <p className="text-sm text-gray-500">Number</p>
+              <p className="text-sm">{profileData ? profileData.contact_info : 'Loading...'}</p>
             </div>
-            <div className="p-4 border-t">
-              <p className="text-sm text-gray-500">Role</p>
-              <p className="text-sm">Penjual</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Contact Info Section */}
-        <div>
-          <h2 className="text-sm font-medium mb-2">Contact Info</h2>
-          <div className="bg-white rounded-lg">
-            <button className="w-full p-4 flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Email</p>
-                <p className="text-sm">sultansultin123@gmail.com</p>
-              </div>
-              <IoIosArrowForward className="text-gray-400" />
-            </button>
-            <button className="w-full p-4 flex items-center justify-between border-t">
-              <div>
-                <p className="text-sm text-gray-500">Number</p>
-                <p className="text-sm">+62 822-5544-8877</p>
-              </div>
-              <IoIosArrowForward className="text-gray-400" />
-            </button>
-          </div>
-        </div>
-
-        {/* Password Section */}
-        <div>
-          <h2 className="text-sm font-medium mb-2">Password</h2>
-          <div className="bg-white rounded-lg">
-            <div className="p-4 flex items-center justify-between">
-              <span className="text-sm">Save password</span>
-              <Switch
-                checked={savePassword}
-                onChange={setSavePassword}
-                className={`${
-                  savePassword ? 'bg-[#4CD964]' : 'bg-gray-200'
-                } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none`}
-              >
-                <span
-                  className={`${
-                    savePassword ? 'translate-x-6' : 'translate-x-1'
-                  } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                />
-              </Switch>
-            </div>
-            <button className="w-full p-4 flex items-center justify-between border-t">
-              <span className="text-sm">Change password</span>
-              <IoIosArrowForward className="text-gray-400" />
-            </button>
           </div>
         </div>
 
@@ -127,4 +73,4 @@ const ProfilePage: React.FC = () => {
   );
 };
 
-export default ProfilePage;
+export default ProfilePage; 
